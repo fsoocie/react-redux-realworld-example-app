@@ -35,9 +35,9 @@ jobs:
       - name: Copy build to the server
         uses: appleboy/scp-action@v0.1.1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: $SSH_HOST
+          username: $SSH_USER
+          key: $SSH_PRIVATE_KEY
           rm: true
           source: build/*
           target: "~/realworld/public"
