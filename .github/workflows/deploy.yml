@@ -3,17 +3,24 @@ name: Build and Deploy
 on:
   push:
     branches: [master]
+
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: node:14.17.0-alpine
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
         with:
-          node-version: '14'
-      - run: npm install
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: npm-
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
       - name: Build
         run: npm run build
         env:
@@ -31,18 +38,19 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build
-          path: build
-      - name: Copy build to the server
-        uses: appleboy/scp-action@v0.1.1
-        with:
-          host: $SSH_HOST
-          username: $SSH_USER
-          key: $SSH_PRIVATE_KEY
-          rm: true
-          source: build/*
-          target: "~/realworld/public"
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/id_rsa
+          echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      - name: Copy files to the server
+        run: |
+          scp -r build/* $SSH_USER@$SSH_HOST:~/realworld/public
+        env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
