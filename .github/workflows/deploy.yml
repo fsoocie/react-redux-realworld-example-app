@@ -1,16 +1,14 @@
-name: Build and Deploy - test
+name: Build and Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
-    container:
-      image: node:14.17.0-alpine
     steps:
       - uses: actions/checkout@v2
       - name: Cache dependencies
@@ -25,19 +23,6 @@ jobs:
         run: npm run build
         env:
           REACT_APP_BACKEND_URL: ${{ secrets.API_URL }}
-      - name: Archive build
-        uses: actions/upload-artifact@v2
-        with:
-          name: build
-          path: build
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download a single artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: build
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
