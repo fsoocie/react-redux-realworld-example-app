@@ -51,7 +51,7 @@ jobs:
       - name: Copy files to the server
         run: |
           rsync -a --progress --human-readable --delete \
-          ./build deploy@172.104.151.230:~/realworld/public
+          ./build deploy@104.200.17.39:~/realworld/public
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
