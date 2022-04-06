@@ -50,7 +50,8 @@ jobs:
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Copy files to the server
         run: |
-          scp -r build/* $SSH_USER@$SSH_HOST:~/realworld/public
+          rsync -a --progress --human-readable --delete \
+          ./build deploy@172.104.151.230:~/realworld/public
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
