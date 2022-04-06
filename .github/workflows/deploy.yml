@@ -50,9 +50,6 @@ jobs:
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Copy files to the server
         run: |
-          mkdir -p test2
-          touch test2/test2.txt
-          echo "ls"
           scp -r * $SSH_USER@$SSH_HOST:~/realworld/public
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
