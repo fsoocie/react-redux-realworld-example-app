@@ -29,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: build
+          path: build/*
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       - name: Copy files to the server
         run: |
-          scp -r build $SSH_USER@$SSH_HOST:~/realworld/public
+          scp -r build/* $SSH_USER@$SSH_HOST:~/realworld/public
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
